@@ -76,7 +76,7 @@ const Table = (props) => {
                     </form>
                 </div> : ""
             }
-            {showTable ? <ul>{listTable()}</ul> : ""}
+            {showTable ? listTable() : ""}
         </div>
     )
 }

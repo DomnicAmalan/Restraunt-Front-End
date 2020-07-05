@@ -22,7 +22,7 @@ export default class extends React.Component{
                 org_table_id: "", org_table_name: "", table_qty: 0, is_full: false, current_qty: 0
             },
             order: {
-                order_id: uuidv4(), table_id: "", persons: 0, order_status: "placed"
+                order_id: null, table_id: "", persons: 0, order_status: "placed"
             }
         }
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -37,28 +37,36 @@ export default class extends React.Component{
         })
     }
 
-    handleChange = (name, e) => {
-        console.log("yes")
+    handleChange = (name, e, edit=false, id=null, update_primary_constaraint=null) => {
+        let state = this.state[name]
         let target = e.target.name
         let value = e.target.value
-        let state = this.state[name]
+        if(edit && id && update_primary_constaraint){
+            state[update_primary_constaraint] = id
+        }
+        else{
+            state["order_id"] = uuidv4()
+        }
         state[target] = value
+        
         this.setState({
             state: state
         })
     }
    
-    async handleSubmit(e, name, relative_url){
+    async handleSubmit(e, name, relative_url, update=false){
         e.preventDefault()
         let url = BASE_URL + name + relative_url
-        const Resp = await Axios.post(url, this.state[name]).then(res => {
-            if(res.status == 200){
+        let method = update ? 'put' :'post'
+        const Resp = await Axios[method](url, this.state[name]).then(res => {
+            if(res.status == 200 || 204){
                 return true
             }
             else{
                 return false
             }
         })
+        return Resp
     }
 
     render(){
